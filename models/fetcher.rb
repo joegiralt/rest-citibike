@@ -18,6 +18,8 @@ class StationFetcher
         json = request.options[:response_body]
         stash json
         data = MultiJson.load(json)
+      else
+        puts "But the requst is no good! maybe internet is down, or maybe their server is?"
       end
     else
       puts "Let's relax for a little while longer before making another request"

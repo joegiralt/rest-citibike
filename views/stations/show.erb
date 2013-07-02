@@ -1,5 +1,10 @@
 <h1><%= @station.stationName %></h1>
 <ul>
-  <li>There are <%= @station.availableBikes %> bikes available at this station</li>
+  <% Station.properties.each do |property| %>
+    <% if @station.send(property.name) != "" %>
+      <li><%= property.name %>: <%= @station.send(property.name) %></li>
+    <% end %>
+  <% end %>
 </ul>
+<p><a href="/stations/edit/<%= @station.id %>">Edit me</a></p>
 <p><a href="/stations/delete/<%= @station.id %>">Delete me</a></p>

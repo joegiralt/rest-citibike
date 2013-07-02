@@ -1,0 +1,10 @@
+<h1>Edit <%= @station.stationName %></h1>
+
+<form action="/stations/<%= @station.id %>" method="POST">
+  <% Station.properties.reject{|p| p.name == :id}.each do |property| %>
+  <label><%= property.name %>: </label>
+  <input type="text" name="<%= property.name %>" value="<%= @station.send(property.name) %>"><br>
+  <% end %>
+  <input type="submit">
+</form>
+
