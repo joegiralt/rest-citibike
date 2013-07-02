@@ -1,26 +1,39 @@
 class StationFetcher
 
-  attr_reader :stations
+  attr_reader :stations, :updated
   API_URL = "http://citibikenyc.com/stations/json"
   STASH_PATH = "data/recent.json"
+  RELAX_TIME = 300
 
   def initialize
-    request = Typhoeus.get(API_URL)
-    if is_good?(request)
-      json = request.options[:response_body]
-      stash json
+
+    json = File.open(STASH_PATH).read
+    data = MultiJson.load(json)
+
+    if seconds_since_last_request(data) > RELAX_TIME
+      puts "it's been long enough to send another request"
+      @updated = true
+      request = Typhoeus.get(API_URL)
+      if is_good?(request)
+        json = request.options[:response_body]
+        stash json
+        data = MultiJson.load(json)
+      end
     else
-      # if we can't download the json
-      # use the most recently savedversion
-      json = File.open(STASH_PATH).read
+      puts "Let's relax for a little while longer before making another request"
+      @updated = false
     end
-    @stations = json_to_stations(json)
+    @stations = data_to_stations(data)
   end
 
   private
 
-  def json_to_stations(json)
-    MultiJson.load(json)["stationBeanList"].collect do |station|
+  def seconds_since_last_request(data)
+    Time.now - Time.parse(data["executionTime"])
+  end
+
+  def data_to_stations(data)
+    data["stationBeanList"].collect do |station|
       symbolify_keys(station)
     end
   end

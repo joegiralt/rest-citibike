@@ -1,3 +1,5 @@
-<% @stations.each do |station| %>
-  <p><%= station.name %></p>
-<% end %>
+<ul>
+  <% @stations.each do |station| %>
+    <li><a href="/stations/<%= station.id %>"><%= station.stationName %></a></li>
+  <% end %>
+</ul>
